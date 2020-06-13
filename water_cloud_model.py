@@ -17,14 +17,14 @@ class WaterCloudModel:
         self.alpha = alpha
         self.A = const_a
         self.B = const_b
-        self.theta = theta
+        self.theta = math.pi * theta / 180
         self.output_cols = output_cols
 
     @staticmethod
     def read_data(file_path: str) -> pd.DataFrame:
         if not is_csv(file_path):
             raise NotCsvException(file_path)
-        return pd.read_csv(file_path)
+        return pd.read_csv(file_path, sep=r'\s*,\s*')
 
     def write_to_csv(self, df: pd.DataFrame):
         df.to_csv(self.output_path, header=True)
@@ -43,8 +43,8 @@ class WaterCloudModel:
         rows = df.shape[0]
         new_df = pd.DataFrame(columns=self.output_cols)
         for row in range(0, rows):
-            mv = df[row]['mv']
-            total = df[row]['total']
+            mv = df.at[row, 'mv']
+            total = df.at[row, 'total']
             decay_factor = self.get_double_decay_factor(mv)
             if decay_factor == 0:
                 print("zero decay_factor found")
